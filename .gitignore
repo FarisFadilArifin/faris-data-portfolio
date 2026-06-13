@@ -1,0 +1,14 @@
+.netlify/
+design-qa.md
+*.zip
+
+# Local source/mock assets that are not used by the deployed portfolio.
+assets/faris-openai-codex-photo.jpeg
+assets/profile-photo-mockup.png
+assets/quant-equity-overview.png
+assets/quant-monte-carlo-histogram.png
+assets/quant-pca-cumulative-variance.png
+assets/quant-research-framework-1600x900.png
+assets/quant-walk-forward.png
+assets/weather-dashboard-calibration-1920x900.png
+assets/weather-dashboard-widgets-1920x900.png
