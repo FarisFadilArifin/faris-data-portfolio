@@ -92,7 +92,13 @@ button {
     radial-gradient(circle at 74% 34%, rgba(211, 220, 242, 0.34), transparent 24%),
     radial-gradient(circle at 16% 78%, rgba(139, 114, 245, 0.28), transparent 34%);
   isolation: isolate;
-  transition: opacity 360ms var(--ease), visibility 360ms var(--ease);
+  transform: scale(0.996);
+  --component-x: 34px;
+  --component-y: 18px;
+  transition:
+    opacity 360ms var(--ease),
+    visibility 360ms var(--ease),
+    transform 440ms var(--ease);
 }
 
 .slide.active,
@@ -101,6 +107,102 @@ button {
   opacity: 1;
   pointer-events: auto;
   z-index: 1;
+  transform: scale(1);
+}
+
+.slide.from-backward {
+  --component-x: -34px;
+}
+
+.slide.active.animate-in :where(
+  .slide-kicker,
+  h1,
+  h2,
+  .lead,
+  .title-actions,
+  .title-card,
+  .terminal-card,
+  .about-pills span,
+  .portrait-card,
+  .project-card,
+  .project-page-number,
+  .tag-row,
+  .case-lead,
+  .value-step,
+  .visual-frame,
+  .mini-stat,
+  .takeaway,
+  .contact-card
+) {
+  animation: component-enter 640ms var(--ease) both;
+  animation-delay: var(--motion-delay, 80ms);
+  will-change: transform, opacity, filter;
+}
+
+.slide.active.animate-in .slide-kicker,
+.slide.active.animate-in .project-page-number {
+  --motion-delay: 40ms;
+}
+
+.slide.active.animate-in :where(h1, h2) {
+  --motion-delay: 95ms;
+}
+
+.slide.active.animate-in :where(.lead, .case-lead, .tag-row) {
+  --motion-delay: 150ms;
+}
+
+.slide.active.animate-in :where(.title-actions, .title-card, .portrait-card, .visual-frame, .contact-card) {
+  --motion-delay: 220ms;
+}
+
+.slide.active.animate-in .terminal-card,
+.slide.active.animate-in .takeaway {
+  --motion-delay: 310ms;
+}
+
+.slide.active.animate-in .about-pills span:nth-child(1),
+.slide.active.animate-in .project-card:nth-child(1),
+.slide.active.animate-in .value-step:nth-child(1),
+.slide.active.animate-in .mini-stat:nth-child(1) {
+  --motion-delay: 190ms;
+}
+
+.slide.active.animate-in .about-pills span:nth-child(2),
+.slide.active.animate-in .project-card:nth-child(2),
+.slide.active.animate-in .value-step:nth-child(2),
+.slide.active.animate-in .mini-stat:nth-child(2) {
+  --motion-delay: 260ms;
+}
+
+.slide.active.animate-in .about-pills span:nth-child(3),
+.slide.active.animate-in .project-card:nth-child(3),
+.slide.active.animate-in .value-step:nth-child(3),
+.slide.active.animate-in .mini-stat:nth-child(3) {
+  --motion-delay: 330ms;
+}
+
+.slide.active.animate-in .value-step:nth-child(4),
+.slide.active.animate-in .mini-stat:nth-child(4) {
+  --motion-delay: 400ms;
+}
+
+@keyframes component-enter {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translate3d(var(--component-x), var(--component-y), 0) scale(0.985);
+  }
+
+  64% {
+    filter: blur(0);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translate3d(0, 0, 0) scale(1);
+  }
 }
 
 .slide::before {
@@ -1476,5 +1578,34 @@ h2 {
   *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.2s !important;
+  }
+
+  .slide,
+  .slide.active,
+  .slide.visible {
+    transform: none !important;
+  }
+
+  .slide.active.animate-in :where(
+    .slide-kicker,
+    h1,
+    h2,
+    .lead,
+    .title-actions,
+    .title-card,
+    .terminal-card,
+    .about-pills span,
+    .portrait-card,
+    .project-card,
+    .project-page-number,
+    .tag-row,
+    .case-lead,
+    .value-step,
+    .visual-frame,
+    .mini-stat,
+    .takeaway,
+    .contact-card
+  ) {
+    animation: none !important;
   }
 }

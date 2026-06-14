@@ -111,6 +111,7 @@ const stage = document.getElementById("deckStage");
 const progressFill = document.getElementById("progressFill");
 const slideCounter = document.getElementById("slideCounter");
 let currentSlide = 0;
+let hasShownInitialSlide = false;
 
 function escapeHtml(value) {
   return String(value)
@@ -509,11 +510,35 @@ function getSlideIndexFromHash() {
 
 function showSlide(index, updateHash = true) {
   const allSlides = Array.from(document.querySelectorAll(".slide"));
-  currentSlide = Math.max(0, Math.min(index, allSlides.length - 1));
+  const previousSlide = currentSlide;
+  const nextSlide = Math.max(0, Math.min(index, allSlides.length - 1));
+  const isSameSlide = hasShownInitialSlide && nextSlide === previousSlide;
+  const direction = nextSlide >= previousSlide ? "forward" : "backward";
+  currentSlide = nextSlide;
+
+  if (isSameSlide) {
+    slideCounter.textContent = `${currentSlide + 1} / ${allSlides.length}`;
+    progressFill.style.width = `${((currentSlide + 1) / allSlides.length) * 100}%`;
+    return;
+  }
+
+  stage.dataset.navDirection = direction;
+
   allSlides.forEach((slide, i) => {
-    slide.classList.toggle("active", i === currentSlide);
-    slide.classList.toggle("visible", i === currentSlide);
+    const isActive = i === currentSlide;
+    slide.classList.toggle("active", isActive);
+    slide.classList.toggle("visible", isActive);
+    slide.classList.remove("animate-in", "from-forward", "from-backward");
+    if (isActive) slide.classList.add(`from-${direction}`);
   });
+
+  const activeSlide = allSlides[currentSlide];
+  if (activeSlide && !isSameSlide) {
+    void activeSlide.offsetWidth;
+    activeSlide.classList.add("animate-in");
+  }
+  hasShownInitialSlide = true;
+
   slideCounter.textContent = `${currentSlide + 1} / ${allSlides.length}`;
   progressFill.style.width = `${((currentSlide + 1) / allSlides.length) * 100}%`;
   if (updateHash) {
