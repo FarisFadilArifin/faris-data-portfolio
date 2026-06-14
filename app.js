@@ -14,6 +14,9 @@ const projects = [
     year: "2026",
     tags: ["Classification", "Imbalance", "Optuna", "Stacking"],
     repoUrl: "https://github.com/FarisFadilArifin/fraud-detection",
+    visual: "assets/fraud-monitoring-dashboard.png",
+    visualFit: "dashboard-fit",
+    visualCaption: "Fraud monitoring dashboard from the project workflow.",
     objective: "Detect risky online transactions from highly imbalanced fraud data.",
     story: {
       problem: "Fraud teams need to find rare risky transactions without relying on misleading accuracy.",
@@ -130,10 +133,46 @@ function tagRow(tags) {
   return `<div class="tag-row">${tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}</div>`;
 }
 
+function copyIcon() {
+  return `
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M9 9.5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2z"></path>
+      <path d="M6 14.5H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1"></path>
+    </svg>
+  `;
+}
+
+function expandIcon() {
+  return `
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M8 3H4a1 1 0 0 0-1 1v4"></path>
+      <path d="M16 3h4a1 1 0 0 1 1 1v4"></path>
+      <path d="M8 21H4a1 1 0 0 1-1-1v-4"></path>
+      <path d="M16 21h4a1 1 0 0 0 1-1v-4"></path>
+      <path d="M8.5 8.5 3.5 3.5"></path>
+      <path d="m15.5 8.5 5-5"></path>
+      <path d="m8.5 15.5-5 5"></path>
+      <path d="m15.5 15.5 5 5"></path>
+    </svg>
+  `;
+}
+
+function renderCopyEmailButton(extraClass = "") {
+  return `
+    <button class="icon-action copy-email-button ${extraClass}" type="button" data-copy="${escapeHtml(contact.email)}" aria-label="Copy email" title="Copy email">
+      ${copyIcon()}
+      <span class="sr-only">Copy email</span>
+    </button>
+  `;
+}
+
 function actionLinks() {
   return `
     <div class="title-actions">
-      <a class="action-link primary" href="mailto:${contact.email}">Email</a>
+      <div class="email-action">
+        <a class="action-link primary" href="mailto:${contact.email}">Email</a>
+        ${renderCopyEmailButton()}
+      </div>
       <a class="action-link" href="${contact.linkedin}" target="_blank" rel="noreferrer">LinkedIn</a>
       <a class="action-link" href="${contact.github}" target="_blank" rel="noreferrer">GitHub</a>
       <a class="action-link" href="${contact.cv}" target="_blank" rel="noreferrer">CV PDF</a>
@@ -298,7 +337,13 @@ function renderProjectSnapshot(index, projectIndex) {
 
       <aside class="snapshot-card">
         ${project.visual ? `
-          <img class="${escapeHtml(visualClass)}" src="${escapeHtml(project.visual)}" alt="${escapeHtml(project.shortTitle)} visual">
+          <div class="visual-frame">
+            <img class="${escapeHtml(visualClass)}" src="${escapeHtml(project.visual)}" alt="${escapeHtml(project.shortTitle)} visual">
+            <button class="icon-action visual-expand" type="button" data-lightbox-src="${escapeHtml(project.visual)}" data-lightbox-title="${escapeHtml(project.title)}" aria-label="View ${escapeHtml(project.shortTitle)} image larger" title="View image larger">
+              ${expandIcon()}
+              <span class="sr-only">View image larger</span>
+            </button>
+          </div>
         ` : ""}
         <div class="compact-metrics">
           ${metrics.map(([label, value]) => `
@@ -324,7 +369,15 @@ function renderImagePanel(project) {
   return `
     <aside class="media-panel">
       <div class="image-stack ${images.length > 1 ? "multi" : ""}">
-        ${images.map((image) => `<img src="${escapeHtml(image)}" alt="${escapeHtml(project.shortTitle)} project visual">`).join("")}
+        ${images.map((image) => `
+          <div class="image-tile">
+            <img src="${escapeHtml(image)}" alt="${escapeHtml(project.shortTitle)} project visual">
+            <button class="icon-action visual-expand" type="button" data-lightbox-src="${escapeHtml(image)}" data-lightbox-title="${escapeHtml(project.title)}" aria-label="View ${escapeHtml(project.shortTitle)} image larger" title="View image larger">
+              ${expandIcon()}
+              <span class="sr-only">View image larger</span>
+            </button>
+          </div>
+        `).join("")}
       </div>
       <p class="media-caption">${escapeHtml(project.visualCaption || "Project evidence from local research artifacts.")}</p>
     </aside>
@@ -420,7 +473,10 @@ function renderContact(index) {
       <aside class="contact-card glass-card">
         <strong>Portfolio focus</strong>
         <div class="contact-list">
-          <a class="contact-item" href="mailto:${contact.email}"><span>Email</span>${contact.email}</a>
+          <div class="contact-item contact-email-item">
+            <a href="mailto:${contact.email}"><span>Email</span>${contact.email}</a>
+            ${renderCopyEmailButton("contact-copy")}
+          </div>
           <a class="contact-item" href="${contact.linkedin}" target="_blank" rel="noreferrer"><span>LinkedIn</span>linkedin.com/in/faris-fadil-arifin</a>
           <a class="contact-item" href="${contact.github}" target="_blank" rel="noreferrer"><span>GitHub</span>github.com/FarisFadilArifin</a>
           <a class="contact-item" href="${contact.cv}" target="_blank" rel="noreferrer"><span>Resume</span>Download CV PDF</a>
@@ -466,6 +522,104 @@ function showSlide(index, updateHash = true) {
   }
 }
 
+function setupClipboard() {
+  document.addEventListener("click", async (event) => {
+    const button = event.target.closest("[data-copy]");
+    if (!button) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const value = button.dataset.copy;
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(value);
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = value;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        textarea.remove();
+      }
+      button.classList.add("copied");
+      button.title = "Copied";
+      button.setAttribute("aria-label", "Email copied");
+      window.setTimeout(() => {
+        button.classList.remove("copied");
+        button.title = "Copy email";
+        button.setAttribute("aria-label", "Copy email");
+      }, 1600);
+    } catch {
+      button.classList.add("copy-failed");
+      button.title = "Copy failed";
+      window.setTimeout(() => {
+        button.classList.remove("copy-failed");
+        button.title = "Copy email";
+      }, 1600);
+    }
+  });
+}
+
+function setupLightbox() {
+  document.body.insertAdjacentHTML("beforeend", `
+    <div class="image-lightbox" id="imageLightbox" aria-hidden="true">
+      <button class="lightbox-backdrop" type="button" data-lightbox-close aria-label="Close image preview"></button>
+      <div class="lightbox-panel" role="dialog" aria-modal="true" aria-label="Project image preview">
+        <div class="lightbox-topbar">
+          <strong id="lightboxTitle">Project image</strong>
+          <button class="icon-action lightbox-close" type="button" data-lightbox-close aria-label="Close image preview" title="Close">
+            <span aria-hidden="true">x</span>
+          </button>
+        </div>
+        <img class="lightbox-image" alt="">
+      </div>
+    </div>
+  `);
+
+  const lightbox = document.getElementById("imageLightbox");
+  const image = lightbox.querySelector(".lightbox-image");
+  const title = document.getElementById("lightboxTitle");
+
+  const closeLightbox = () => {
+    lightbox.classList.remove("open");
+    lightbox.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("lightbox-open");
+    image.removeAttribute("src");
+  };
+
+  document.addEventListener("click", (event) => {
+    const trigger = event.target.closest("[data-lightbox-src]");
+    if (!trigger) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const label = trigger.dataset.lightboxTitle || "Project image";
+    image.src = trigger.dataset.lightboxSrc;
+    image.alt = label;
+    title.textContent = label;
+    lightbox.classList.add("open");
+    lightbox.setAttribute("aria-hidden", "false");
+    document.body.classList.add("lightbox-open");
+    lightbox.querySelector(".lightbox-close").focus();
+  });
+
+  document.addEventListener("click", (event) => {
+    if (event.target.closest("[data-lightbox-close]")) closeLightbox();
+  });
+
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && lightbox.classList.contains("open")) {
+      event.preventDefault();
+      closeLightbox();
+    }
+  });
+}
+
 function setupStageScale() {
   const scale = () => {
     const isMobile = window.innerWidth <= 720;
@@ -488,6 +642,11 @@ function setupNavigation() {
   document.getElementById("nextBtn").addEventListener("click", () => showSlide(currentSlide + 1));
 
   window.addEventListener("keydown", (event) => {
+    if (document.body.classList.contains("lightbox-open")) {
+      event.preventDefault();
+      return;
+    }
+    if (event.target.closest && event.target.closest("a, button, input, textarea, select")) return;
     if (["ArrowRight", " ", "PageDown", "Enter"].includes(event.key)) {
       event.preventDefault();
       showSlide(currentSlide + 1);
@@ -513,6 +672,7 @@ function setupNavigation() {
 
   let wheelLock = false;
   window.addEventListener("wheel", (event) => {
+    if (document.body.classList.contains("lightbox-open")) return;
     if (wheelLock || Math.abs(event.deltaY) < 20) return;
     wheelLock = true;
     showSlide(event.deltaY > 0 ? currentSlide + 1 : currentSlide - 1);
@@ -526,6 +686,8 @@ function setupNavigation() {
 }
 
 renderSlides();
+setupClipboard();
+setupLightbox();
 setupStageScale();
 setupNavigation();
 showSlide(getSlideIndexFromHash() ?? 0, !window.location.hash);
