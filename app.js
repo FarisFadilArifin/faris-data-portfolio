@@ -20,19 +20,19 @@ const projects = [
     objective: "Detect risky online transactions from highly imbalanced fraud data.",
     story: {
       problem: "Fraud teams need to find rare risky transactions without relying on misleading accuracy.",
-      method: "Built time-based validation, behavior features, tuned boosting models, and stacked predictions.",
-      result: "Reached 0.90269 ROC-AUC and 0.78136 Macro-F1 with a tuned 0.46 threshold.",
+      method: "Built time-based validation, behavior features, tuned boosting models, and a Gradient Boosting stack.",
+      result: "Reached 0.92786 ROC-AUC, 0.80171 Macro-F1, and 0.62386 PR-AUC on chronological holdout.",
       value: "Turns messy transaction data into a practical risk-scoring workflow."
     },
     dataset: "590,540 merged transaction and identity rows. Target: isFraud. Fraud rate: about 3.5%.",
     approach: "Time-based validation, behavioral feature engineering, categorical encoding, model tuning, and stacked predictions.",
-    models: "XGBoost, LightGBM, CatBoost, and a linear stacking model.",
-    evaluation: "ROC-AUC for ranking quality. Macro-F1 and threshold tuning for the imbalanced target.",
+    models: "XGBoost, LightGBM, CatBoost, and a Gradient Boosting stacking meta-model.",
+    evaluation: "ROC-AUC and PR-AUC for ranking quality. Macro-F1 and threshold tuning for the imbalanced target.",
     results: [
-      ["ROC-AUC", "0.90269"],
-      ["Macro-F1", "0.78136"],
-      ["Threshold", "0.46"],
-      ["Features", "493 model features kept"]
+      ["ROC-AUC", "0.92786"],
+      ["Macro-F1", "0.80171"],
+      ["PR-AUC", "0.62386"],
+      ["Threshold", "0.47"]
     ],
     insights: "Validation strategy, behavior features, and threshold tuning mattered more than default accuracy.",
     limitations: "Turn the notebook into a pipeline, add SHAP, calibrate probabilities, and test a scoring API."
@@ -390,12 +390,12 @@ function renderFraudPanel() {
       <div class="metric-grid">
         <article class="metric-card"><strong>590,540</strong><span>merged training rows</span></article>
         <article class="metric-card"><strong>3.499%</strong><span>fraud rate</span></article>
-        <article class="metric-card"><strong>493</strong><span>model features kept</span></article>
-        <article class="metric-card"><strong>0.46</strong><span>best Macro-F1 threshold</span></article>
-        <article class="metric-card"><strong>0.90269</strong><span>stacked ROC-AUC</span></article>
-        <article class="metric-card"><strong>0.78136</strong><span>stacked Macro-F1</span></article>
+        <article class="metric-card"><strong>0.47</strong><span>best Macro-F1 threshold</span></article>
+        <article class="metric-card"><strong>0.92786</strong><span>stacked ROC-AUC</span></article>
+        <article class="metric-card"><strong>0.80171</strong><span>stacked Macro-F1</span></article>
+        <article class="metric-card"><strong>0.62386</strong><span>stacked PR-AUC</span></article>
       </div>
-      <p class="media-caption">Fraud visual is a real metric panel from the documented notebook run, not a fake screenshot.</p>
+      <p class="media-caption">Gradient Boosting stack metrics from the saved model bundle.</p>
     </aside>
   `;
 }
